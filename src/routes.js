@@ -140,9 +140,12 @@ module.exports = function(app, cors, corsOptions, scriptVersion) {
 	app.get('/api/search/modlist/:querystring', cors(corsOptions), function(req, res) {
     Modlist.find({}, { modlist: 1, username: 1}, function(err, users) {
         var toReturn = [];
+        var queryLower = request.params.query.toLowerCase();
+        var modnameLower;
         for(var i = 0; users && i < users.length; i++) {
           for(var j = 0; j < users[i].modlist.length; j++) {
-            if(users[i].modlist[j].name.indexOf(req.params.querystring) >= 0) {
+            modnameLower = users[i].modlist[j].name.toLowerCase();
+            if(modnameLower.indexOf(queryLower) >= 0) {
               toReturn.push(users[i].username);
               break;
             }
