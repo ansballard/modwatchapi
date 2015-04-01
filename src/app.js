@@ -8,15 +8,13 @@ var app = express();
 
 var http = require('http');
 var path = require('path');
-var passport = require('passport');
+var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose/');
 
-var configDB = require('./config/db.js').url;
+var configDB = require('./config/db.js').local;
 mongoose.connect(configDB);
 var Schema = mongoose.Schema;
-
-require('./passport.min.js')(passport);
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
@@ -36,13 +34,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({secret: process.env.DBEXPRESSSECRET, resave: false, saveUninitialized: false}));
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var scriptVersion = "0.26b";
 
-require('./routes.min.js') (app, cors, corsOptions, scriptVersion);
+require('./routes.min.js') (app, cors, jwt, corsOptions, scriptVersion);
 
 
 http.createServer(app).listen(app.get('port'), app.get('ip'), function(){

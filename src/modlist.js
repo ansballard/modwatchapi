@@ -21,6 +21,7 @@ var modlistSchema = new Schema({
 	game: String,
 	pic: String,
 	badge: String,
+	token: String,
 	timestamp: Date
 }, {
 	collection: 'modlist'
