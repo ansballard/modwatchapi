@@ -12,7 +12,8 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose/');
 
-var configDB = require('./config/db.js').local;
+var configDB = require('./config/db.js').getDev(process.env.DBUSERNAME,process.env.DBPASSWORD);
+//var configDB = require('./config/db.js').getLocal(null, null);
 mongoose.connect(configDB);
 var Schema = mongoose.Schema;
 

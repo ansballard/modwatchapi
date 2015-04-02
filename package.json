@@ -14,7 +14,9 @@
     "url": "http://www.openshift.com/"
   },
   "scripts": {
-    "dev": "mongod --dbpath ../../db & grunt & grunt watch & DBEXPRESSSECRET=swag JWTSECRET=swag nodemon app.min.js"
+    "dev": "mongod --dbpath ../../db & grunt & grunt watch & DBEXPRESSSECRET=swag JWTSECRET=swag nodemon app.min.js",
+    "serve": "grunt & grunt watch & DBEXPRESSSECRET=swag JWTSECRET=swag nodemon app.min.js",
+    "serveWindows": "grunt & set DBEXPRESSSECRET=swag & set JWTSECRET=swag & nodemon app.min.js & grunt watch"
   },
   "homepage": "http://www.openshift.com/",
   "repository": {
