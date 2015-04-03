@@ -12,8 +12,8 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose/');
 
-var configDB = require('./config/db.js').getDev(process.env.DBUSERNAME,process.env.DBPASSWORD);
-//var configDB = require('./config/db.js').getLocal(null, null);
+//var configDB = require('./config/db.js').getDev(process.env.DBUSERNAME,process.env.DBPASSWORD);
+var configDB = require('./config/db.js').getLocal(null, null);
 mongoose.connect(configDB);
 var Schema = mongoose.Schema;
 
@@ -23,7 +23,7 @@ var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var corsOptions = {
   origin: true,
   methods: ['GET','POST']
-}
+};
 
 app.set('port', port);
 app.set('ip', ipaddress);
