@@ -18,7 +18,7 @@ mongoose.connect(configDB);
 var Schema = mongoose.Schema;
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var port      = process.env.OPENSHIFT_NODEJS_PORT || 3000;
 
 var corsOptions = {
   origin: true,
@@ -36,10 +36,11 @@ app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({secret: process.env.DBEXPRESSSECRET, resave: false, saveUninitialized: false}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors(corsOptions));
 
 var scriptVersion = "0.26b";
 
-require('./routes.min.js') (app, cors, jwt, corsOptions, scriptVersion);
+require('./routes.min.js') (app, jwt, scriptVersion);
 
 
 http.createServer(app).listen(app.get('port'), app.get('ip'), function(){

@@ -1,10 +1,10 @@
-module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
+module.exports = function(app, jwt, scriptVersion) {
 
   /**
    *  Will need routes for option on each when token auth comes in
    */
 
-	app.get('/api/users/count', cors(corsOptions), function(req, res) {
+	app.get('/api/users/count', function(req, res) {
 		Modlist.find({}, {_id:1}, function(err, _modlists) {
 			if(_modlists) {
 				res.set('Content-Type','text/plain');
@@ -15,10 +15,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/', function(req, res) {
-	  res.send('<html><body><form action="/auth/signin" method="POST"><input name="username"/><input type="password" name="password"/><input type="submit"/></form></body></html>');
-	})
-	app.get('/api/users/list', cors(corsOptions), function(req, res) {
+	app.get('/api/users/list', function(req, res) {
 		Modlist.find({}, {username:1}, function(err, _mods) {
 			var mods_ = [];
 			for(var i = _mods.length-1, j = 0; i >= 0; i--, j++) {
@@ -28,11 +25,11 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			res.send({"usernames":mods_});
 		});
 	});
-	app.get('/api/script/version', cors(corsOptions), function(req, res) {
+	app.get('/api/script/version', function(req, res) {
 		res.set('Content-Type','text');
 		res.send(scriptVersion);
 	});
-	app.get('/api/user/:username/plugins', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/plugins', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {plugins:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -44,7 +41,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/modlist', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/modlist', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {modlist:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -56,7 +53,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/ini', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/ini', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {ini:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -68,7 +65,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/prefsini', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/prefsini', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {prefsini:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -80,7 +77,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/skse', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/skse', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {skse:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -92,7 +89,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/enblocal', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/enblocal', function(req, res) {
 		Modlist.findOne({username: req.params.username}, {enblocal:1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
@@ -104,7 +101,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 		});
 	});
-	app.get('/api/user/:username/profile', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/profile', function(req, res) {
 	  Modlist.findOne({username: req.params.username}, {tag:1,enb:1,badge:1,timestamp:1,game:1,_id:0}, function(err, _list) {
 	    if(!_list) {
 				res.writeHead(404);
@@ -115,7 +112,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 	  });
 	});
-	app.get('/api/user/:username/files', cors(corsOptions), function(req, res) {
+	app.get('/api/user/:username/files', function(req, res) {
 	  Modlist.findOne({username: req.params.username}, {plugins:1,modlist:1,ini:1,prefsini:1,skse:1,enblocal:1,_id:0}, function(err, _list) {
 	    if(!_list) {
 				res.writeHead(404);
@@ -140,7 +137,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 			}
 	  });
 	});
-	app.get('/api/search/modlist/:querystring', cors(corsOptions), function(req, res) {
+	app.get('/api/search/modlist/:querystring', function(req, res) {
     Modlist.find({}, { modlist: 1, username: 1}, function(err, users) {
         var toReturn = [];
         var queryLower = req.params.querystring.toLowerCase();
@@ -158,7 +155,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
         res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
     });
   });
-  /*app.get('/api/search/timestamp/:from/:to', cors(corsOptions), function(req, res) {
+  /*app.get('/api/search/timestamp/:from/:to', function(req, res) {
     Modlist.find({}, {username: 1, timestamp: 1}, function(err, users) {
         var toReturn = [];
         for(var i = 0; users && i < users.length; i++) {
@@ -169,7 +166,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
     });
   });*/
 
-  app.post('/auth/checkToken', cors(corsOptions), function(req, res) {
+  app.post('/auth/checkToken', function(req, res) {
     jwt.verify(req.body.token, process.env.JWTSECRET, function(err, decoded) {
       if(err) {
         res.writeHead(403);
@@ -181,7 +178,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
     });
   });
 
-  app.post('/auth/signin', cors(corsOptions), function(req, res) {
+  app.post('/auth/signin', function(req, res) {
     Modlist.findOne({"username":req.body.username}, function(err, user) {
       if(err) {
         res.writeHead(500);
@@ -206,7 +203,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
     });
   });
 
-  app.post('/newTag/:username', cors(corsOptions), ensureAuthorized, function(req, res) {
+  app.post('/api/newTag/:username', ensureAuthorized, function(req, res) {
 		jwt.verify(req.token, JWTSECRET, function(err, decoded) {
 		  if(err) {
 		    res.writeHead(403);
@@ -217,7 +214,6 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
   					_list.tag = req.body.tag;
   					_list.save(function(err) {
   						if(err) {
-  							console.log(err);
   							res.writeHead(500);
   							res.end();
   						} else {
@@ -234,7 +230,8 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 		});
 	});
 
-	app.post('/newENB/:username', cors(corsOptions), ensureAuthorized, function(req, res) {
+	app.post('/api/newENB/:username', ensureAuthorized, function(req, res) {
+	  console.log("hello?");
 		jwt.verify(req.token, JWTSECRET, function(err, decoded) {
 		  if(err) {
 		    res.writeHead(403);
@@ -245,7 +242,6 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
   					_list.enb = req.body.enb;
   					_list.save(function(err) {
   						if(err) {
-  							console.log(err);
   							res.writeHead(500);
   							res.end();
   						} else {
@@ -262,7 +258,7 @@ module.exports = function(app, cors, jwt, corsOptions, scriptVersion) {
 		});
 	});
 
-	/*app.post('/loadorder', cors(corsOptions), function(req, res) {
+	/*app.post('/loadorder', function(req, res) {
 		Modlist.findOne({'username' : req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				if(_modlist.validPassword(req.body.password)) {
