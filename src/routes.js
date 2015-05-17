@@ -1,143 +1,159 @@
-module.exports = function(app, jwt, scriptVersion) {
+var Modlist = require("./modlist.min.js");
+
+var ensureAuthorized = function ensureAuthorized(req, res, next) { "use strict";
+
+	var bearerToken;
+	var bearerHeader = req.headers["authorization"];
+	if (typeof bearerHeader !== "undefined") {
+		var bearer = bearerHeader.split(" ");
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		next(req, res);
+	} else {
+		res.send(403);
+	}
+};
+
+module.exports = function(app, jwt, scriptVersion) { "use strict";
 
   /**
    *  Will need routes for option on each when token auth comes in
    */
 
-	app.get('/api/users/count', function(req, res) {
-		Modlist.find({}, {_id:1}, function(err, _modlists) {
+	app.get("/api/users/count", function(req, res) {
+		Modlist.find({}, {_id: 1}, function(err, _modlists) {
 			if(_modlists) {
-				res.set('Content-Type','text/plain');
-				res.send(''+_modlists.length);
+				res.set("Content-Type", "text/plain");
+				res.send("" + _modlists.length);
 			} else {
 				res.writeHead(404);
 				res.end();
 			}
 		});
 	});
-	app.get('/api/users/list', function(req, res) {
-		Modlist.find({}, {username:1}, function(err, _mods) {
-			var mods_ = [];
-			for(var i = _mods.length-1, j = 0; i >= 0; i--, j++) {
-				mods_[j] = _mods[i].username;
+	app.get("/api/users/list", function(req, res) {
+		Modlist.find({}, {username: 1}, function(err, _mods) {
+			var mods = [];
+			for(var i = _mods.length - 1, j = 0; i >= 0; i--, j++) {
+				mods[j] = _mods[i].username;
 			}
-			res.set('Content-Type','text/json');
-			res.send({"usernames":mods_});
+			res.set("Content-Type", "text/json");
+			res.send({"usernames": mods});
 		});
 	});
-	app.get('/api/script/version', function(req, res) {
-		res.set('Content-Type','text');
+	app.get("/api/script/version", function(req, res) {
+		res.set("Content-Type", "text");
 		res.send(scriptVersion);
 	});
-	app.get('/api/user/:username/plugins', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {plugins:1}, function(err, _list) {
+	app.get("/api/user/:username/plugins", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {plugins: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.plugins));
 			}
 		});
 	});
-	app.get('/api/user/:username/modlist', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {modlist:1}, function(err, _list) {
+	app.get("/api/user/:username/modlist", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {modlist: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.modlist));
 			}
 		});
 	});
-	app.get('/api/user/:username/ini', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {ini:1}, function(err, _list) {
+	app.get("/api/user/:username/ini", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {ini: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.ini));
 			}
 		});
 	});
-	app.get('/api/user/:username/prefsini', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {prefsini:1}, function(err, _list) {
+	app.get("/api/user/:username/prefsini", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {prefsini: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.prefsini));
 			}
 		});
 	});
-	app.get('/api/user/:username/skse', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {skse:1}, function(err, _list) {
+	app.get("/api/user/:username/skse", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {skse: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.skse));
 			}
 		});
 	});
-	app.get('/api/user/:username/enblocal', function(req, res) {
-		Modlist.findOne({username: req.params.username}, {enblocal:1}, function(err, _list) {
+	app.get("/api/user/:username/enblocal", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {enblocal: 1}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 
 				res.end(JSON.stringify(_list.enblocal));
 			}
 		});
 	});
-	app.get('/api/user/:username/profile', function(req, res) {
-	  Modlist.findOne({username: req.params.username}, {tag:1,enb:1,badge:1,timestamp:1,game:1,_id:0}, function(err, _list) {
-	    if(!_list) {
+	app.get("/api/user/:username/profile", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {tag: 1, enb: 1, badge: 1, timestamp: 1, game: 1, _id: 0}, function(err, _list) {
+			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
+				res.setHeader("Content-Type", "application/json");
 				res.end(JSON.stringify(_list));
 			}
-	  });
+		});
 	});
-	app.get('/api/user/:username/files', function(req, res) {
-	  Modlist.findOne({username: req.params.username}, {plugins:1,modlist:1,ini:1,prefsini:1,skse:1,enblocal:1,_id:0}, function(err, _list) {
-	    if(!_list) {
+	app.get("/api/user/:username/files", function(req, res) {
+		Modlist.findOne({username: req.params.username}, {plugins: 1, modlist: 1, ini: 1, prefsini: 1, skse: 1, enblocal: 1, _id: 0}, function(err, _list) {
+			if(!_list) {
 				res.writeHead(404);
 				res.end();
 			} else {
-				res.setHeader('Content-Type', 'application/json');
-				var _arr = [];
+				res.setHeader("Content-Type", "application/json");
+				var arr = [];
 				if(_list.plugins.length > 0) {
-				  _arr.push("plugins");
+					arr.push("plugins");
 				} if(_list.modlist.length > 0) {
-				  _arr.push("modlist");
+					arr.push("modlist");
 				} if(_list.ini.length > 0) {
-				  _arr.push("ini");
+					arr.push("ini");
 				} if(_list.prefsini.length > 0) {
-				  _arr.push("prefsini");
+					arr.push("prefsini");
 				} if(_list.skse.length > 0) {
-				  _arr.push("skse");
+					arr.push("skse");
 				} if(_list.enblocal.length > 0) {
-				  _arr.push("enblocal");
+					arr.push("enblocal");
 				}
-				res.end(JSON.stringify(_arr));
+				res.end(JSON.stringify(arr));
 			}
-	  });
+		});
 	});
-	app.get('/api/search/modlist/:querystring', function(req, res) {
+	app.get("/api/search/modlist/:querystring", function(req, res) {
     Modlist.find({}, { modlist: 1, username: 1}, function(err, users) {
         var toReturn = [];
         var queryLower = req.params.querystring.toLowerCase();
@@ -151,51 +167,51 @@ module.exports = function(app, jwt, scriptVersion) {
             }
           }
         }
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
     });
   });
-  /*app.get('/api/search/timestamp/:from/:to', function(req, res) {
+  /*app.get("/api/search/timestamp/:from/:to", function(req, res) {
     Modlist.find({}, {username: 1, timestamp: 1}, function(err, users) {
         var toReturn = [];
         for(var i = 0; users && i < users.length; i++) {
           toReturn.push(users[i].timestamp > );
         }
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
     });
   });*/
 
-  app.post('/auth/checkToken', function(req, res) {
+  app.post("/auth/checkToken", function(req, res) {
     jwt.verify(req.body.token, process.env.JWTSECRET, function(err, decoded) {
       if(err) {
         res.writeHead(403);
         res.end();
       } else {
-        res.setHeader('Content-Type', 'application/json');
-				res.end(JSON.stringify({"username":decoded.username}));
+        res.setHeader("Content-Type", "application/json");
+				res.end(JSON.stringify({"username": decoded.username}));
       }
     });
   });
 
-  app.post('/auth/signin', function(req, res) {
-    Modlist.findOne({"username":req.body.username}, function(err, user) {
+  app.post("/auth/signin", function(req, res) {
+    Modlist.findOne({"username": req.body.username}, function(err, user) {
       if(err) {
         res.writeHead(500);
         res.end();
       } else {
         if(user && user.validPassword(req.body.password)) {
-          user.pic = jwt.sign({"username":user.username,"password":user.password}, process.env.JWTSECRET, {expiresInMinutes: 720});
-          user.save(function(err, user) {
-            if(err) {
+          user.pic = jwt.sign({"username": user.username, "password": user.password}, process.env.JWTSECRET, {expiresInMinutes: 720});
+          user.save(function(saveErr, saveUser) {
+            if(saveErr) {
               res.writeHead(500);
               res.end();
             } else {
-              res.json({token: user.pic});
+              res.json({token: saveUser.pic});
             }
           });
         } else {
-          console.log(req.body.username);
+          //console.log(req.body.username);
           res.writeHead(403);
           res.end();
         }
@@ -203,71 +219,70 @@ module.exports = function(app, jwt, scriptVersion) {
     });
   });
 
-  app.post('/api/newTag/:username', ensureAuthorized, function(req, res) {
-		jwt.verify(req.token, JWTSECRET, function(err, decoded) {
-		  if(err) {
-		    res.writeHead(403);
-		    res.end();
-		  } else {
-		    Modlist.findOne({username: req.params.username}, function(err, _list) {
-  				if(_list) {
-  					_list.tag = req.body.tag;
-  					_list.save(function(err) {
-  						if(err) {
-  							res.writeHead(500);
-  							res.end();
-  						} else {
-  							res.statusCode = 200;
-  							res.end();
-  						}
-  					});
-  				} else {
-  					res.writeHead(404);
-  					res.end();
-  				}
-  			});
-		  }
+  app.post("/api/newTag/:username", ensureAuthorized, function(req, res) {
+		jwt.verify(req.token, process.env.JWTSECRET, function(err, decoded) {
+			if(err) {
+				res.writeHead(403);
+				res.end();
+			} else {
+				Modlist.findOne({username: req.params.username}, function(findErr, _list) {
+					if(_list) {
+						_list.tag = req.body.tag;
+						_list.save(function(saveErr) {
+							if(saveErr) {
+								res.writeHead(500);
+								res.end();
+							} else {
+								res.statusCode = 200;
+								res.end();
+							}
+						});
+					} else {
+						res.writeHead(404);
+						res.end();
+					}
+				});
+				}
+				});
+				});
+
+	app.post("/api/newENB/:username", ensureAuthorized, function(req, res) {
+		jwt.verify(req.token, process.env.JWTSECRET, function(err, decoded) {
+			if(err) {
+				res.writeHead(403);
+				res.end();
+			} else {
+				Modlist.findOne({username: req.params.username}, function(findErr, _list) {
+					if(_list) {
+						_list.enb = req.body.enb;
+						_list.save(function(saveErr) {
+							if(saveErr) {
+								res.writeHead(500);
+								res.end();
+							} else {
+								res.statusCode = 200;
+								res.end();
+							}
+						});
+					} else {
+						res.writeHead(404);
+						res.end();
+					}
+				});
+			}
 		});
 	});
 
-	app.post('/api/newENB/:username', ensureAuthorized, function(req, res) {
-	  console.log("hello?");
-		jwt.verify(req.token, JWTSECRET, function(err, decoded) {
-		  if(err) {
-		    res.writeHead(403);
-		    res.end();
-		  } else {
-		    Modlist.findOne({username: req.params.username}, function(err, _list) {
-  				if(_list) {
-  					_list.enb = req.body.enb;
-  					_list.save(function(err) {
-  						if(err) {
-  							res.writeHead(500);
-  							res.end();
-  						} else {
-  							res.statusCode = 200;
-  							res.end();
-  						}
-  					});
-  				} else {
-  					res.writeHead(404);
-  					res.end();
-  				}
-  			});
-		  }
-		});
-	});
-
-	/*app.post('/loadorder', function(req, res) {
-		Modlist.findOne({'username' : req.body.username}, function(err, _modlist) {
+	/*app.post("/loadorder", function(req, res) {
+		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				if(_modlist.validPassword(req.body.password)) {
 					//_modlist.UpdateOldStyleModlist();
-					console.log('password valid');
-					_modlist.list = '';
-					_modlist.modlisttxt = '';
-					_modlist.skyrimini = '';
-					_modlist.skyrimprefsini = '';
+					console.log("password valid");
+					_modlist.list = "";
+					_modlist.modlisttxt = "";
+					_modlist.skyrimini = "";
+					_modlist.skyrimprefsini = "";
 
 					_modlist.plugins = req.body.plugins;
 					_modlist.modlist = req.body.modlist;
@@ -331,8 +346,8 @@ module.exports = function(app, jwt, scriptVersion) {
 			}
 		});
 	});
-	app.post('/fullloadorder', function(req, res) {
-		Modlist.findOne({'username' : req.body.username}, function(err, _modlist) {
+	app.post("/fullloadorder", function(req, res) {
+		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				//console.log(req.body.modlisttxt);
 				if(_modlist.validPassword(req.body.password)) {
@@ -363,7 +378,7 @@ module.exports = function(app, jwt, scriptVersion) {
 			}
 			else { // if the username does not exist
         // ^[a-zA-Z0-9_-]*$
-        // console.log(req.body.username.match('^[a-zA-Z0-9_-]*$'));
+        // console.log(req.body.username.match("^[a-zA-Z0-9_-]*$"));
         // if match then create, else error out
 				var modlist = new Modlist();
 				modlist.list = req.body.plugins;
@@ -392,19 +407,3 @@ module.exports = function(app, jwt, scriptVersion) {
 		});
 	});*/
 };
-
-var Modlist = require('./modlist.min.js');
-
-function ensureAuthorized(req, res, next) {
-
-    var bearerToken;
-    var bearerHeader = req.headers["authorization"];
-    if (typeof bearerHeader !== 'undefined') {
-        var bearer = bearerHeader.split(" ");
-        bearerToken = bearer[1];
-        req.token = bearerToken;
-        next(req, res);
-    } else {
-        res.send(403);
-    }
-}
