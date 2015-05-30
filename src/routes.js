@@ -3,7 +3,7 @@ var Modlist = require("./modlist.min.js");
 var ensureAuthorized = function ensureAuthorized(req, res, next) { "use strict";
 
 	var bearerToken;
-	var bearerHeader = req.headers["authorization"];
+	var bearerHeader = req.headers.authorization;
 	if (typeof bearerHeader !== "undefined") {
 		var bearer = bearerHeader.split(" ");
 		bearerToken = bearer[1];

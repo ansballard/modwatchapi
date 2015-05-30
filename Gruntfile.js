@@ -18,10 +18,13 @@ module.exports = function(grunt) { "use strict";
         ]
       }
     },
+    eslint: {
+      target: ["src/*.js"]
+    },
     watch: {
       backend: {
         files: ["src/*.js"],
-        tasks: ["uglify:backend"]
+        tasks: ["eslint", "uglify:backend"]
       }
     },
     nodemon: {
@@ -42,11 +45,8 @@ module.exports = function(grunt) { "use strict";
     }
   });
 
-  grunt.loadNpmTasks("grunt-contrib-uglify");
-  grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.loadNpmTasks("grunt-concurrent");
-  grunt.loadNpmTasks("grunt-nodemon");
+  require("jit-grunt")(grunt);
 
-  grunt.registerTask("default", ["uglify:backend"]);
-  grunt.registerTask("serve", ["concurrent"]);
+  grunt.registerTask("default", ["eslint", "uglify:backend"]);
+  grunt.registerTask("serve", ["default", "concurrent:dist"]);
 };

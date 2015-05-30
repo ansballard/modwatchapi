@@ -9,13 +9,13 @@ var app = express();
 var http = require("http");
 var path = require("path");
 var jwt = require("jsonwebtoken");
-var bcrypt = require("bcrypt-nodejs");
+//var bcrypt = require("bcrypt-nodejs");
 var mongoose = require("mongoose/");
 
-var configDB = require("./config/db.js").getDev(process.env.DBUSERNAME,process.env.DBPASSWORD);
-//var configDB = require("./config/db.js").getLocal(null, null);
+//var configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
+var configDB = require("./config/db.js").getLocal(null, null);
 mongoose.connect(configDB);
-var Schema = mongoose.Schema;
+//var Schema = mongoose.Schema;
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
@@ -28,7 +28,7 @@ var corsOptions = {
 app.set("port", port);
 app.set("ip", ipaddress);
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
+app.set("view engine", "html");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -46,5 +46,3 @@ require("./routes.min.js")(app, jwt, scriptVersion);
 http.createServer(app).listen(app.get("port"), app.get("ip"), function() { "use strict";
   console.log("Express server listening at " + app.get("ip") + ":" + app.get("port"));
 });
-
-
