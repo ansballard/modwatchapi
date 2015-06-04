@@ -27,8 +27,6 @@ var modlistSchema = new Schema({
 	collection: "modlist"
 });
 
-//var modlistSchemas = mongoose.model("modlist", modlistSchema);
-
 modlistSchema.methods.generateHash = function(_password) { "use strict";
 	return bcrypt.hashSync(_password, bcrypt.genSaltSync(8), null);
 };
