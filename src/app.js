@@ -11,8 +11,15 @@ var path = require("path");
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose/");
 
-var configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
-//var configDB = require("./config/db.js").getLocal(null, null);
+var configDB;
+
+if(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_NODEJS_IP) {
+	configDB = require("./config/db.js").getLive(process.env.DBUSERNAME, process.env.DBPASSWORD);
+} else {
+	configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
+	//var configDB = require("./config/db.js").getLocal(null, null);
+}
+
 mongoose.connect(configDB);
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
