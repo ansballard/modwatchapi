@@ -9,13 +9,11 @@ var app = express();
 var http = require("http");
 var path = require("path");
 var jwt = require("jsonwebtoken");
-//var bcrypt = require("bcrypt-nodejs");
 var mongoose = require("mongoose/");
 
-//var configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
-var configDB = require("./config/db.js").getLocal(null, null);
+var configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
+//var configDB = require("./config/db.js").getLocal(null, null);
 mongoose.connect(configDB);
-//var Schema = mongoose.Schema;
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
@@ -41,7 +39,6 @@ app.use(cors(corsOptions));
 var scriptVersion = "0.26b";
 
 require("./routes.min.js")(app, jwt, scriptVersion);
-
 
 http.createServer(app).listen(app.get("port"), app.get("ip"), function() { "use strict";
   console.log("Express server listening at " + app.get("ip") + ":" + app.get("port"));
