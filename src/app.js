@@ -23,7 +23,7 @@ if(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_NODEJS_IP) {
 mongoose.connect(configDB);
 
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
-var port = process.env.OPENSHIFT_NODEJS_PORT || 3000;
+var port = process.env.OPENSHIFT_NODEJS_PORT || 3001;
 
 var corsOptions = {
   origin: true,

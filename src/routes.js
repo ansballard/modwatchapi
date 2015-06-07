@@ -1,5 +1,18 @@
 var Modlist = require("./modlist.min.js");
 
+var supportedFiletypes = [
+	"plugins",
+	"modlist",
+	"ini",
+	"prefsini",
+	"skse",
+	"enblocal"
+];
+
+var validFiletype = function validFileType(filetype) { "use strict";
+	return supportedFiletypes.indexOf(filetype) >= 0;
+};
+
 var ensureAuthorized = function ensureAuthorized(req, res, next) { "use strict";
 
 	var bearerToken;
@@ -45,77 +58,23 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		res.set("Content-Type", "text");
 		res.send(scriptVersion);
 	});
-	app.get("/api/user/:username/plugins", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {plugins: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.plugins));
-			}
-		});
-	});
-	app.get("/api/user/:username/modlist", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {modlist: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.modlist));
-			}
-		});
-	});
-	app.get("/api/user/:username/ini", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {ini: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.ini));
-			}
-		});
-	});
-	app.get("/api/user/:username/prefsini", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {prefsini: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.prefsini));
-			}
-		});
-	});
-	app.get("/api/user/:username/skse", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {skse: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.skse));
-			}
-		});
-	});
-	app.get("/api/user/:username/enblocal", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {enblocal: 1}, function(err, _list) {
-			if(!_list) {
-				res.writeHead(404);
-				res.end();
-			} else {
-				res.setHeader("Content-Type", "application/json");
-
-				res.end(JSON.stringify(_list.enblocal));
-			}
-		});
+	app.get("/api/user/:username/file/:filetype", function(req, res) {
+		if(validFiletype(req.params.filetype)) {
+			var filetypeJSON = {};
+			filetypeJSON[req.params.filetype] = 1;
+			Modlist.findOne({username: req.params.username}, filetypeJSON, function(err, _list) {
+				if(!_list) {
+					res.writeHead(404);
+					res.end();
+				} else {
+					res.setHeader("Content-Type", "application/json");
+	
+					res.end(JSON.stringify(_list[req.params.filetype]));
+				}
+			});
+		} else {
+			res.sendStatus(500);
+		}
 	});
 	app.get("/api/user/:username/profile", function(req, res) {
 		Modlist.findOne({username: req.params.username}, {tag: 1, enb: 1, badge: 1, timestamp: 1, game: 1, _id: 0}, function(err, _list) {
@@ -153,23 +112,30 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
-	app.get("/api/search/modlist/:querystring", function(req, res) {
-    Modlist.find({}, { modlist: 1, username: 1}, function(err, users) {
-        var toReturn = [];
-        var queryLower = req.params.querystring.toLowerCase();
-        var modnameLower;
-        for(var i = 0; users && i < users.length; i++) {
-          for(var j = 0; j < users[i].modlist.length; j++) {
-            modnameLower = users[i].modlist[j].name.toLowerCase();
-            if(modnameLower.indexOf(queryLower) >= 0) {
-              toReturn.push(users[i].username);
-              break;
-            }
-          }
-        }
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
-    });
+	app.get("/api/search/file/:filetype/:querystring", function(req, res) {
+		if(validFiletype(req.params.filetype)) {
+			var filetypeJSON = {username: 1};
+			filetypeJSON[req.params.filetype] = 1;
+	    Modlist.find({}, filetypeJSON, function(err, users) {
+	        var toReturn = [];
+	        var queryLower = req.params.querystring.toLowerCase();
+	        var fileLower;
+	        for(var i = 0; users && i < users.length; i++) {
+	          for(var j = 0; j < users[i][req.params.filetype].length; j++) {
+	            fileLower = users[i][req.params.filetype][j].name.toLowerCase();
+	            if(fileLower.indexOf(queryLower) >= 0) {
+	              toReturn.push(users[i].username);
+	              break;
+	            }
+	          }
+	        }
+	        res.setHeader("Content-Type", "application/json");
+	        res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
+	    });
+		} else {
+			res.sendStatus(500);
+		}
+		
   });
   /*app.get("/api/search/timestamp/:from/:to", function(req, res) {
     Modlist.find({}, {username: 1, timestamp: 1}, function(err, users) {
@@ -242,9 +208,9 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 						res.end();
 					}
 				});
-				}
-				});
-				});
+			}
+		});
+	});
 
 	app.post("/api/newENB/:username", ensureAuthorized, function(req, res) {
 		jwt.verify(req.token, process.env.JWTSECRET, function(err, decoded) {
@@ -272,81 +238,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
-
-	/*app.post("/loadorder", function(req, res) {
-		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
-			if(_modlist) { // if the username exists in the db
-				if(_modlist.validPassword(req.body.password)) {
-					//_modlist.UpdateOldStyleModlist();
-					console.log("password valid");
-					_modlist.list = "";
-					_modlist.modlisttxt = "";
-					_modlist.skyrimini = "";
-					_modlist.skyrimprefsini = "";
-
-					_modlist.plugins = req.body.plugins;
-					_modlist.modlist = req.body.modlist;
-					_modlist.ini = req.body.ini;
-					_modlist.prefsini = req.body.prefsini;
-					_modlist.skse = req.body.skse;
-					_modlist.enblocal = req.body.enblocal;
-					_modlist.enb = req.body.enb;
-					_modlist.game = req.body.game;
-					_modlist.tag = req.body.tag;
-					_modlist.timestamp = Date.now();
-					_modlist.save(function(err) {
-						if(err) {
-							res.statusCode = 500;
-							console.log(err);
-							res.write(err);
-							res.end();
-							throw err;
-						} else {
-							res.statusCode = 200;
-							res.end();
-						}
-					});
-				}
-				else {
-					res.statusCode = 403;
-					res.write("Access denied, incorrect password");
-					res.end();
-				}
-			}
-			else { // if the username does not exist
-
-				var modlist = new Modlist();
-				modlist.plugins = req.body.plugins;
-				modlist.modlist = req.body.modlist;
-				modlist.ini = req.body.ini;
-				modlist.prefsini = req.body.prefsini;
-				modlist.skse = req.body.skse;
-				modlist.enblocal = req.body.enblocal;
-				modlist.enb = req.body.enb;
-				modlist.game = req.body.game;
-				modlist.tag = req.body.tag;
-				modlist.timestamp = Date.now();
-				modlist.username = req.body.username;
-				modlist.password = modlist.generateHash(req.body.password);
-
-				modlist.save(function(err) {
-					if(err) {
-						res.statusCode = 500;
-						console.logor(err);
-						res.write(err);
-						res.end();
-						throw err;
-					}
-					else {
-						console.log("new user created");
-						res.statusCode = 200;
-						res.end();
-					}
-				});
-			}
-		});
-	});
-	app.post("/fullloadorder", function(req, res) {
+	/*app.post("/fullloadorder", function(req, res) {
 		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				//console.log(req.body.modlisttxt);
