@@ -238,7 +238,82 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
-	/*app.post("/fullloadorder", function(req, res) {
+	app.post("/loadorder", function(req, res) {
+		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
+			if(_modlist) { // if the username exists in the db
+				if(_modlist.validPassword(req.body.password)) {
+					if(_modlist.list || _modlist.modlisttxt || _modlist.skyrimini || _modlist.skyrimprefsini) {
+						console.log("removing deprecated fields");
+						_modlist.list = undefined;
+						_modlist.modlisttxt = undefined;
+						_modlist.skyrimini = undefined;
+						_modlist.skyrimprefsini = undefined;
+					}
+					_modlist.plugins = req.body.plugins;
+					_modlist.modlist = req.body.modlist;
+					_modlist.ini = req.body.ini;
+					_modlist.prefsini = req.body.prefsini;
+					_modlist.skse = req.body.skse;
+					_modlist.enblocal = req.body.enblocal;
+					_modlist.enb = req.body.enb;
+					_modlist.game = req.body.game;
+					_modlist.tag = req.body.tag;
+					_modlist.timestamp = Date.now();
+					/*_modlist.save(function(saveErr) {
+						if(saveErr) {
+							res.statusCode = 500;
+							res.write(saveErr);
+							res.end();
+							throw saveErr;
+						} else {
+							res.statusCode = 200;
+							res.end();
+						}
+					});*/
+					res.setHeader("Content-Type", "application/json");
+					res.end(JSON.stringify(_modlist));
+				}
+				else {
+					res.statusCode = 403;
+					res.write("Access denied, incorrect password");
+					res.end();
+				}
+			}
+			else { // if the username does not exist
+				console.log(req.body);
+				var modlist = new Modlist();
+				modlist.plugins = req.body.plugins;
+				modlist.modlist = req.body.modlist;
+				modlist.ini = req.body.ini;
+				modlist.prefsini = req.body.prefsini;
+				modlist.skse = req.body.skse;
+				modlist.enblocal = req.body.enblocal;
+				modlist.enb = req.body.enb;
+				modlist.game = req.body.game;
+				modlist.tag = req.body.tag;
+				modlist.timestamp = Date.now();
+				modlist.username = req.body.username;
+				modlist.password = modlist.generateHash(req.body.password);
+				/*modlist.save(function(saveErr) {
+					if(saveErr) {
+						res.statusCode = 500;
+						res.write(saveErr);
+						res.end();
+						throw saveErr;
+					}
+					else {
+						console.log("new user created");
+						res.statusCode = 200;
+						res.end();
+					}
+				});*/
+					res.setHeader("Content-Type", "application/json");
+					res.end(JSON.stringify(modlist));
+			}
+		});
+	});
+	/*
+	app.post("/fullloadorder", function(req, res) {
 		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				//console.log(req.body.modlisttxt);
