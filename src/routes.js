@@ -68,7 +68,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					res.end();
 				} else {
 					res.setHeader("Content-Type", "application/json");
-	
+
 					res.end(JSON.stringify(_list[req.params.filetype]));
 				}
 			});
@@ -135,7 +135,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		} else {
 			res.sendStatus(500);
 		}
-		
+
   });
   /*app.get("/api/search/timestamp/:from/:to", function(req, res) {
     Modlist.find({}, {username: 1, timestamp: 1}, function(err, users) {
