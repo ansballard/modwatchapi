@@ -76,6 +76,29 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			res.sendStatus(500);
 		}
 	});
+	app.get("/api/user/:username/rawfile/:filetype", function(req, res) {
+		if (validFiletype(req.params.filetype)) {
+			var filetypeJSON = {};
+			filetypeJSON[req.params.filetype] = 1;
+			Modlist.findOne({
+				username: req.params.username
+			}, filetypeJSON, function(err, _list) {
+				if (!_list) {
+					res.writeHead(404);
+					res.end();
+				} else {
+					res.setHeader("Content-Type", "text/plain");
+					var textList = [];
+					for(var i = 0; i < _list.length; i++) {
+						textList.push(_list.name);
+					}
+					res.end(textList.join("\n"));
+				}
+			});
+		} else {
+			res.sendStatus(500);
+		}
+	});
 	app.get("/api/user/:username/profile", function(req, res) {
 		Modlist.findOne({username: req.params.username}, {tag: 1, enb: 1, badge: 1, timestamp: 1, game: 1, _id: 0}, function(err, _list) {
 			if(!_list) {
@@ -116,22 +139,22 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		if(validFiletype(req.params.filetype)) {
 			var filetypeJSON = {username: 1};
 			filetypeJSON[req.params.filetype] = 1;
-	    Modlist.find({}, filetypeJSON, function(err, users) {
-	        var toReturn = [];
-	        var queryLower = req.params.querystring.toLowerCase();
-	        var fileLower;
-	        for(var i = 0; users && i < users.length; i++) {
-	          for(var j = 0; j < users[i][req.params.filetype].length; j++) {
-	            fileLower = users[i][req.params.filetype][j].name.toLowerCase();
-	            if(fileLower.indexOf(queryLower) >= 0) {
-	              toReturn.push(users[i].username);
-	              break;
-	            }
-	          }
-	        }
-	        res.setHeader("Content-Type", "application/json");
-	        res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
-	    });
+			Modlist.find({}, filetypeJSON, function(err, users) {
+				var toReturn = [];
+				var queryLower = req.params.querystring.toLowerCase();
+				var fileLower;
+				for(var i = 0; users && i < users.length; i++) {
+					for(var j = 0; j < users[i][req.params.filetype].length; j++) {
+						fileLower = users[i][req.params.filetype][j].name.toLowerCase();
+						if(fileLower.indexOf(queryLower) >= 0) {
+							toReturn.push(users[i].username);
+							break;
+						}
+					}
+				}
+				res.setHeader("Content-Type", "application/json");
+				res.end(JSON.stringify({users: toReturn, length: toReturn.length}));
+			});
 		} else {
 			res.sendStatus(500);
 		}
@@ -239,11 +262,10 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		});
 	});
 	app.post("/loadorder", function(req, res) {
-		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
+		Modlist.findOne({"username": req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				if(_modlist.validPassword(req.body.password)) {
 					if(_modlist.list || _modlist.modlisttxt || _modlist.skyrimini || _modlist.skyrimprefsini) {
-						console.log("removing deprecated fields");
 						_modlist.list = undefined;
 						_modlist.modlisttxt = undefined;
 						_modlist.skyrimini = undefined;
@@ -280,7 +302,6 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				}
 			}
 			else { // if the username does not exist
-				console.log(req.body);
 				var modlist = new Modlist();
 				modlist.plugins = req.body.plugins;
 				modlist.modlist = req.body.modlist;
