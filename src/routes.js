@@ -55,8 +55,8 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		});
 	});
 	app.get("/api/script/version", function(req, res) {
-		res.set("Content-Type", "text");
-		res.send(scriptVersion);
+		res.set("Content-Type", "text/plain");
+		res.end(scriptVersion);
 	});
 	app.get("/api/user/:username/file/:filetype", function(req, res) {
 		if(validFiletype(req.params.filetype)) {
@@ -68,7 +68,6 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					res.end();
 				} else {
 					res.setHeader("Content-Type", "application/json");
-
 					res.end(JSON.stringify(_list[req.params.filetype]));
 				}
 			});
@@ -89,8 +88,8 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				} else {
 					res.setHeader("Content-Type", "text/plain");
 					var textList = [];
-					for(var i = 0; i < _list.length; i++) {
-						textList.push(_list.name);
+					for(var i = 0; i < _list[req.params.filetype].length; i++) {
+						textList.push(_list[req.params.filetype].name);
 					}
 					res.end(textList.join("\n"));
 				}
