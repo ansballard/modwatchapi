@@ -280,19 +280,16 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					_modlist.game = req.body.game;
 					_modlist.tag = req.body.tag;
 					_modlist.timestamp = Date.now();
-					/*_modlist.save(function(saveErr) {
+					_modlist.save(function(saveErr) {
 						if(saveErr) {
 							res.statusCode = 500;
 							res.write(saveErr);
 							res.end();
-							throw saveErr;
 						} else {
 							res.statusCode = 200;
 							res.end();
 						}
-					});*/
-					res.setHeader("Content-Type", "application/json");
-					res.end(JSON.stringify(_modlist));
+					});
 				}
 				else {
 					res.statusCode = 403;
@@ -327,8 +324,8 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 						res.end();
 					}
 				});*/
-					res.setHeader("Content-Type", "application/json");
-					res.end(JSON.stringify(modlist));
+				res.setHeader("Content-Type", "application/json");
+				res.end(JSON.stringify(modlist));
 			}
 		});
 	});
