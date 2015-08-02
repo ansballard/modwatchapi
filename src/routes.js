@@ -281,14 +281,16 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					_modlist.tag = req.body.tag;
 					_modlist.timestamp = Date.now();
 					_modlist.save(function(saveErr) {
-						if(saveErr) {
+					/*	if(saveErr) {
 							res.statusCode = 500;
 							res.write(saveErr);
 							res.end();
 						} else {
 							res.statusCode = 200;
 							res.end();
-						}
+						}*/
+						res.setHeader("Content-Type", "application/json");
+						res.end(_modlist);
 					});
 				}
 				else {
