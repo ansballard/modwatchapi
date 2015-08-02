@@ -89,7 +89,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					res.setHeader("Content-Type", "text/plain");
 					var textList = [];
 					for(var i = 0; i < _list[req.params.filetype].length; i++) {
-						textList.push(_list[req.params.filetype].name);
+						textList.push(_list[req.params.filetype][i].name);
 					}
 					res.end(textList.join("\n"));
 				}
