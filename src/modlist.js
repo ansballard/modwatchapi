@@ -35,6 +35,64 @@ modlistSchema.methods.validPassword = function(_password) { "use strict";
 	return bcrypt.compareSync(_password, this.password);
 };
 
+modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
+	var tempNew = [];
+	var save = false;
+	var i = 0;
+
+	if(this.plugins.length > 0 && typeof this.plugins[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.plugins.length; i++) {
+			tempNew.push(this.plugins[i].name);
+		}
+		this.plugins = tempNew;
+		save = true;
+	}
+	if(this.modlist.length > 0 && typeof this.modlist[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.modlist.length; i++) {
+			tempNew.push(this.modlist[i].name);
+		}
+		this.modlist = tempNew;
+		save = true;
+	}
+	if(this.ini.length > 0 && typeof this.ini[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.ini.length; i++) {
+			tempNew.push(this.ini[i].name);
+		}
+		this.ini = tempNew;
+		save = true;
+	}
+	if(this.prefsini.length > 0 && typeof this.prefsini[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.prefsini.length; i++) {
+			tempNew.push(this.prefsini[i].name);
+		}
+		this.prefsini = tempNew;
+		save = true;
+	}
+	if(this.skse.length > 0 && typeof this.skse[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.skse.length; i++) {
+			tempNew.push(this.skse[i].name);
+		}
+		this.skse = tempNew;
+		save = true;
+	}
+	if(this.enblocal.length > 0 && typeof this.enblocal[0].name === "undefined") {
+		tempNew = [];
+		for(i = 0; i < this.enblocal.length; i++) {
+			tempNew.push(this.enblocal[i].name);
+		}
+		this.enblocal = tempNew;
+		save = true;
+	}
+	if(save) {
+		this.save();
+	}
+};
+
 // Overwrites new style with updated old style data, will fix after
 // logic for merging works correctly
 modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
@@ -49,7 +107,7 @@ modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
 		tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
 		tempNew = [];
 		for(i = 0; i < tempOld.length; i++) {
-			tempNew[i] = {"name": tempOld[i]};
+			tempNew[i] = tempOld[i];
 		}
 		this.plugins = tempNew;
 		this.list = "";
@@ -64,9 +122,9 @@ modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
 			tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
 			tempNew = [];
 			for(i = 0; i < tempOld.length; i++) {
-				tempNew[i] = {"name": tempOld[i]};
+				tempNew[i] = tempOld[i];
 			}
-			if(tempNew[0].name === "") {
+			if(tempNew[0] === "") {
 				this.modlist = [];
 			} else {
 				this.modlist = tempNew;
@@ -84,9 +142,9 @@ modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
 			tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
 			tempNew = [];
 			for(i = 0; i < tempOld.length; i++) {
-				tempNew[i] = {"name": tempOld[i]};
+				tempNew[i] = tempOld[i];
 			}
-			if(tempNew[0].name === "") {
+			if(tempNew[0] === "") {
 				this.ini = [];
 			} else {
 				this.ini = tempNew;
@@ -104,9 +162,9 @@ modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
 			tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
 			tempNew = [];
 			for(i = 0; i < tempOld.length; i++) {
-				tempNew[i] = {"name": tempOld[i]};
+				tempNew[i] = tempOld[i];
 			}
-			if(tempNew[0].name === "") {
+			if(tempNew[0] === "") {
 				this.prefsini = [];
 			} else {
 				this.prefsini = tempNew;
@@ -126,24 +184,6 @@ modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
 	if(save) {
 		this.save();
 	}
-};
-
-modlistSchema.methods.GetGPU = function() { "use strict";
-	var gpu = "";
-	if(this.plugins.length < 1) {
-		this.updateOldStyleModlist();
-	}
-	for(var i = 0; i < this.prefsini.length; i++) {
-		if(this.prefsini[i].name.indexOf("sD3DDevice") >= 0) {
-			gpu = this.prefsini[i].name.split("=")[1].trim();
-			if(gpu.indexOf(";") >= 0 || gpu.indexOf("//") >= 0) {
-				return 0;
-			} else {
-				return gpu.substr(1, gpu.length - 2).trim();
-			}
-		}
-	}
-	return 0;
 };
 
 module.exports = mongoose.model("Modlist", modlistSchema);

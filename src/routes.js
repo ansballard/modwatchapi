@@ -67,6 +67,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					res.writeHead(404);
 					res.end();
 				} else {
+					_list.shrinkArrays();
 					res.setHeader("Content-Type", "application/json");
 					res.end(JSON.stringify(_list[req.params.filetype]));
 				}
@@ -86,10 +87,11 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					res.writeHead(404);
 					res.end();
 				} else {
+					_list.shrinkArrays();
 					res.setHeader("Content-Type", "text/plain");
 					var textList = [];
 					for(var i = 0; i < _list[req.params.filetype].length; i++) {
-						textList.push(_list[req.params.filetype][i].name);
+						textList.push(_list[req.params.filetype][i]);
 					}
 					res.end(textList.join("\n"));
 				}
@@ -143,8 +145,9 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				var queryLower = req.params.querystring.toLowerCase();
 				var fileLower;
 				for(var i = 0; users && i < users.length; i++) {
+					users[i].shrinkArrays();
 					for(var j = 0; j < users[i][req.params.filetype].length; j++) {
-						fileLower = users[i][req.params.filetype][j].name.toLowerCase();
+						fileLower = users[i][req.params.filetype][j].toLowerCase();
 						if(fileLower.indexOf(queryLower) >= 0) {
 							toReturn.push(users[i].username);
 							break;
