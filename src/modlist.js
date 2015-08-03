@@ -40,7 +40,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 	var save = false;
 	var i = 0;
 
-	if(this.plugins && this.plugins.length > 0 && typeof this.plugins[0].name === "undefined") {
+	if(this.plugins && this.plugins.length > 0 && typeof this.plugins[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.plugins.length; i++) {
 			tempNew.push(this.plugins[i].name);
@@ -48,7 +48,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 		this.plugins = tempNew;
 		save = true;
 	}
-	if(this.modlist && this.modlist.length > 0 && typeof this.modlist[0].name === "undefined") {
+	if(this.modlist && this.modlist.length > 0 && typeof this.modlist[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.modlist.length; i++) {
 			tempNew.push(this.modlist[i].name);
@@ -56,7 +56,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 		this.modlist = tempNew;
 		save = true;
 	}
-	if(this.ini && this.ini.length > 0 && typeof this.ini[0].name === "undefined") {
+	if(this.ini && this.ini.length > 0 && typeof this.ini[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.ini.length; i++) {
 			tempNew.push(this.ini[i].name);
@@ -64,7 +64,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 		this.ini = tempNew;
 		save = true;
 	}
-	if(this.prefsini && this.prefsini.length > 0 && typeof this.prefsini[0].name === "undefined") {
+	if(this.prefsini && this.prefsini.length > 0 && typeof this.prefsini[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.prefsini.length; i++) {
 			tempNew.push(this.prefsini[i].name);
@@ -72,7 +72,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 		this.prefsini = tempNew;
 		save = true;
 	}
-	if(this.skse && this.skse.length > 0 && typeof this.skse[0].name === "undefined") {
+	if(this.skse && this.skse.length > 0 && typeof this.skse[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.skse.length; i++) {
 			tempNew.push(this.skse[i].name);
@@ -80,7 +80,7 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 		this.skse = tempNew;
 		save = true;
 	}
-	if(this.enblocal && this.enblocal.length > 0 && typeof this.enblocal[0].name === "undefined") {
+	if(this.enblocal && this.enblocal.length > 0 && typeof this.enblocal[0].name !== "undefined") {
 		tempNew = [];
 		for(i = 0; i < this.enblocal.length; i++) {
 			tempNew.push(this.enblocal[i].name);
