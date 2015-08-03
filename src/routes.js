@@ -315,21 +315,18 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				modlist.timestamp = Date.now();
 				modlist.username = req.body.username;
 				modlist.password = modlist.generateHash(req.body.password);
-				/*modlist.save(function(saveErr) {
+				modlist.save(function(saveErr) {
 					if(saveErr) {
 						res.statusCode = 500;
-						res.write(saveErr);
 						res.end();
-						throw saveErr;
 					}
 					else {
-						console.log("new user created");
 						res.statusCode = 200;
 						res.end();
 					}
-				});*/
-				res.setHeader("Content-Type", "application/json");
-				res.end(JSON.stringify(modlist));
+				});
+				//res.setHeader("Content-Type", "application/json");
+				//res.end(JSON.stringify(modlist));
 			}
 		});
 	});
