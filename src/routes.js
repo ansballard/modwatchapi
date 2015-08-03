@@ -280,18 +280,18 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					_modlist.game = req.body.game;
 					_modlist.tag = req.body.tag;
 					_modlist.timestamp = Date.now();
-					_modlist.save(function(saveErr) {
-					/*	if(saveErr) {
+					/*_modlist.save(function(saveErr) {
+						if(saveErr) {
 							res.statusCode = 500;
 							res.write(saveErr);
 							res.end();
 						} else {
 							res.statusCode = 200;
 							res.end();
-						}*/
-						res.setHeader("Content-Type", "application/json");
-						res.end(_modlist);
-					});
+						}
+					});*/
+					res.setHeader("Content-Type", "application/json");
+					res.end({body: req.body, modlist: _modlist});
 				}
 				else {
 					res.statusCode = 403;
