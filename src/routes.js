@@ -291,7 +291,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 						}
 					});*/
 					res.setHeader("Content-Type", "application/json");
-					res.end({body: req.body, modlist: _modlist});
+					res.end(JSON.stringify({body: req.body, modlist: _modlist}));
 				}
 				else {
 					res.statusCode = 403;
