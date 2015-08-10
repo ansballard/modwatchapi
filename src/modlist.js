@@ -97,10 +97,9 @@ modlistSchema.methods.updateFile = function updateFile(userFile, type) {
 	"use strict";
 	var tempOld = [];
 	var tempNew = [];
-	tempOld = this.list.split("\",\"");
+	tempOld = userFile.split("\",\"");
 	tempOld[0] = tempOld[0].substring(2);
 	tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
-	tempNew = [];
 	for(var i = 0; i < tempOld.length; i++) {
 		tempNew[i] = tempOld[i];
 	}
