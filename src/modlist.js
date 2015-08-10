@@ -93,9 +93,23 @@ modlistSchema.methods.shrinkArrays = function shrinkArrays() { "use strict";
 	}
 };
 
+modlistSchema.methods.updateFile = function updateFile(userFile, type) {
+	"use strict";
+	var tempOld = [];
+	var tempNew = [];
+	tempOld = this.list.split("\",\"");
+	tempOld[0] = tempOld[0].substring(2);
+	tempOld[tempOld.length - 1] = tempOld[tempOld.length - 1].substring(0, tempOld[tempOld.length - 1].length - 2);
+	tempNew = [];
+	for(var i = 0; i < tempOld.length; i++) {
+		tempNew[i] = tempOld[i];
+	}
+	this[type] = tempNew;
+};
+
 // Overwrites new style with updated old style data, will fix after
 // logic for merging works correctly
-modlistSchema.methods.updateOldStyleModlist = function() { "use strict";
+modlistSchema.methods.updateOldStyleModlist = function updateOldStyleModlist() { "use strict";
 	var tempOld = [];
 	var tempNew = [];
 	var save = false;

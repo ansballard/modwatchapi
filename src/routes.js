@@ -330,30 +330,27 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
-	/*
 	app.post("/fullloadorder", function(req, res) {
-		Modlist.findOne({"username" : req.body.username}, function(err, _modlist) {
+		Modlist.findOne({"username": req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
 				//console.log(req.body.modlisttxt);
 				if(_modlist.validPassword(req.body.password)) {
-					_modlist.list = req.body.plugins;
-					_modlist.modlisttxt = req.body.modlisttxt;
-					_modlist.skyrimini = req.body.skyrimini;
-					_modlist.skyrimprefsini = req.body.skyrimprefsini;
+					_modlist.plugins = Modlist.updateFile(req.body.plugins, "plugins");
+					_modlist.modlist = Modlist.updateFile(req.body.modlisttxt, "modlist");
+					_modlist.ini = Modlist.updateFile(req.body.skyrimini, "ini");
+					_modlist.prefsini = Modlist.updateFile(req.body.skyrimprefsini, "prefsini");
 					_modlist.timestamp = Date.now();
-					_modlist.save(function(err) {
-						if(err) {
+					/*_modlist.save(function(saveErr) {
+						if(saveErr) {
 							res.statusCode = 500;
-							console.logor(err);
-							res.write(err);
 							res.end();
-							throw err;
 						} else {
-							_modlist.UpdateOldStyleModlist();
+							//_modlist.updateOldStyleModlist();
 							res.statusCode = 200;
 							res.end();
 						}
-					});
+					});*/
+					console.log(_modlist);
 				}
 				else {
 					res.statusCode = 403;
@@ -362,33 +359,28 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				}
 			}
 			else { // if the username does not exist
-        // ^[a-zA-Z0-9_-]*$
-        // console.log(req.body.username.match("^[a-zA-Z0-9_-]*$"));
-        // if match then create, else error out
 				var modlist = new Modlist();
-				modlist.list = req.body.plugins;
-				modlist.modlisttxt = req.body.modlisttxt;
-				modlist.skyrimini = req.body.skyrimini;
-				modlist.skyrimprefsini = req.body.skyrimprefsini;
+				modlist.plugins = Modlist.updateFile(req.body.plugins, "plugins");
+				modlist.modlist = Modlist.updateFile(req.body.modlisttxt, "modlist");
+				modlist.ini = Modlist.updateFile(req.body.skyrimini, "ini");
+				modlist.prefsini = Modlist.updateFile(req.body.skyrimprefsini, "prefsini");
 				modlist.username = req.body.username;
-				modlist.timestamp = Date.now();
 				modlist.password = modlist.generateHash(req.body.password);
+				modlist.timestamp = Date.now();
 
-				modlist.save(function(err) {
-					if(err) {
+				/*modlist.save(function(saveErr) {
+					if(saveErr) {
 						res.statusCode = 500;
-						console.logor(err);
-						res.write(err);
 						res.end();
-						throw err;
 					}
 					else {
-						modlist.UpdateOldStyleModlist();
+						//modlist.updateOldStyleModlist();
 						res.statusCode = 200;
 						res.end();
 					}
-				});
+				});*/
+				console.log(modlist);
 			}
 		});
-	});*/
+	});
 };
