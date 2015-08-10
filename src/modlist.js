@@ -103,7 +103,7 @@ modlistSchema.methods.updateFile = function updateFile(userFile, type) {
 	for(var i = 0; i < tempOld.length; i++) {
 		tempNew[i] = tempOld[i];
 	}
-	this[type] = tempNew;
+	return tempNew;
 };
 
 // Overwrites new style with updated old style data, will fix after

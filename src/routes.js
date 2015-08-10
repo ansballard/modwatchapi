@@ -351,6 +351,8 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 						}
 					});*/
 					console.log(_modlist);
+					res.statusCode = 200;
+					res.end();
 				}
 				else {
 					res.statusCode = 403;
@@ -380,6 +382,8 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					}
 				});*/
 				console.log(modlist);
+				res.statusCode = 200;
+				res.end();
 			}
 		});
 	});
