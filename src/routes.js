@@ -335,10 +335,10 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			if(_modlist) { // if the username exists in the db
 				//console.log(req.body.modlisttxt);
 				if(_modlist.validPassword(req.body.password)) {
-					_modlist.plugins = Modlist.updateFile(req.body.plugins, "plugins");
-					_modlist.modlist = Modlist.updateFile(req.body.modlisttxt, "modlist");
-					_modlist.ini = Modlist.updateFile(req.body.skyrimini, "ini");
-					_modlist.prefsini = Modlist.updateFile(req.body.skyrimprefsini, "prefsini");
+					_modlist.plugins = _modlist.updateFile(req.body.plugins, "plugins");
+					_modlist.modlist = _modlist.updateFile(req.body.modlisttxt, "modlist");
+					_modlist.ini = _modlist.updateFile(req.body.skyrimini, "ini");
+					_modlist.prefsini = _modlist.updateFile(req.body.skyrimprefsini, "prefsini");
 					_modlist.timestamp = Date.now();
 					/*_modlist.save(function(saveErr) {
 						if(saveErr) {
@@ -360,10 +360,10 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 			else { // if the username does not exist
 				var modlist = new Modlist();
-				modlist.plugins = Modlist.updateFile(req.body.plugins, "plugins");
-				modlist.modlist = Modlist.updateFile(req.body.modlisttxt, "modlist");
-				modlist.ini = Modlist.updateFile(req.body.skyrimini, "ini");
-				modlist.prefsini = Modlist.updateFile(req.body.skyrimprefsini, "prefsini");
+				modlist.plugins = modlist.updateFile(req.body.plugins, "plugins");
+				modlist.modlist = modlist.updateFile(req.body.modlisttxt, "modlist");
+				modlist.ini = modlist.updateFile(req.body.skyrimini, "ini");
+				modlist.prefsini = modlist.updateFile(req.body.skyrimprefsini, "prefsini");
 				modlist.username = req.body.username;
 				modlist.password = modlist.generateHash(req.body.password);
 				modlist.timestamp = Date.now();
