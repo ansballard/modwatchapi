@@ -45,13 +45,13 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		});
 	});
 	app.get("/api/users/list", function(req, res) {
-		Modlist.find({}, {username: 1}, function(err, _mods) {
+		Modlist.find({}, {username: 1, timestamp: 1}, function(err, _mods) {
 			var mods = [];
 			for(var i = _mods.length - 1, j = 0; i >= 0; i--, j++) {
-				mods[j] = _mods[i].username;
+				mods[j] = {"username": _mods[i].username, "timestamp": _mods[i].timestamp};
 			}
-			res.set("Content-Type", "text/json");
-			res.send({"usernames": mods});
+			res.set("Content-Type", "application/json");
+			res.send(mods);
 		});
 	});
 	app.get("/api/script/version", function(req, res) {
