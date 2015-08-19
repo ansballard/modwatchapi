@@ -4,6 +4,7 @@ var express = require("express");
   var methodOverride = require("method-override");
   var session = require("express-session");
   var cors = require("cors");
+  var morgan = require("morgan");
 var app = express();
 
 var http = require("http");
@@ -37,6 +38,7 @@ app.set("view engine", "html");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(morgan(process.env.OPENSHIFT_NODEJS_IP ? undefined : "dev"));
 app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({secret: process.env.DBEXPRESSSECRET, resave: false, saveUninitialized: false}));

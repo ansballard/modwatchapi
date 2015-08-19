@@ -13,7 +13,7 @@ var validFiletype = function validFileType(filetype) { "use strict";
 	return supportedFiletypes.indexOf(filetype) >= 0;
 };
 
-var ensureAuthorized = function ensureAuthorized(req, res, next) { "use strict";
+var tokenEnsureAuthorized = function tokenEnsureAuthorized(req, res, next) { "use strict";
 
 	var bearerToken;
 	var bearerHeader = req.headers.authorization;
@@ -21,7 +21,7 @@ var ensureAuthorized = function ensureAuthorized(req, res, next) { "use strict";
 		var bearer = bearerHeader.split(" ");
 		bearerToken = bearer[1];
 		req.token = bearerToken;
-		next(req, res);
+		next();
 	} else {
 		res.send(403);
 	}
@@ -101,7 +101,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		}
 	});
 	app.get("/api/user/:username/profile", function(req, res) {
-		Modlist.findOne({username: req.params.username}, {tag: 1, enb: 1, badge: 1, timestamp: 1, game: 1, _id: 0}, function(err, _list) {
+		Modlist.findOne({username: req.params.username}, {tag: 1, enb: 1, badge: 1, timestamp: 1, game: 1, score: 1, _id: 0}, function(err, _list) {
 			if(!_list) {
 				res.writeHead(404);
 				res.end();
@@ -210,7 +210,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
     });
   });
 
-  app.post("/api/newTag/:username", ensureAuthorized, function(req, res) {
+  app.post("/api/newTag/:username", tokenEnsureAuthorized, function(req, res) {
 		jwt.verify(req.token, process.env.JWTSECRET, function(err, decoded) {
 			if(err) {
 				res.writeHead(403);
@@ -236,8 +236,7 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
-
-	app.post("/api/newENB/:username", ensureAuthorized, function(req, res) {
+	app.post("/api/newENB/:username", tokenEnsureAuthorized, function(req, res) {
 		jwt.verify(req.token, process.env.JWTSECRET, function(err, decoded) {
 			if(err) {
 				res.writeHead(403);
@@ -260,6 +259,64 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 						res.end();
 					}
 				});
+			}
+		});
+	});
+	app.post("/auth/upvote/:votee", tokenEnsureAuthorized, function(req, res) {
+		jwt.verify(req.token, process.env.JWTSECRET, function(jwtVerifyErr, decoded) {
+			if(jwtVerifyErr) {
+				res.writeHead(403);
+				res.write("jwt verification error");
+				res.end();
+			} else if(decoded) {
+				Modlist.findOne({"username": decoded.username}, function(voterFindErr, voter) {
+					console.log(voter.votedon[req.params.votee]);
+					console.log(voter.votedon);
+					console.log(req.params.votee);
+					if(voter && (!voter.votedon || !voter.votedon[req.params.votee] || voter.votedon[req.params.votee].upvote !== true)) {
+						voter.votedon = voter.votedon || {};
+						Modlist.findOne({"username": req.params.votee}, function(findVoteeErr, votee) {
+							if(votee) {
+								votee.score += 1;
+								votee.save(function(voteeSaveErr) {
+									if(voteeSaveErr) {
+										res.writeHead(500);
+										res.write("Error saving votee info");
+										res.end();
+									} else {
+										res.setHeader("Content-Type", "application/json");
+										res.end(JSON.stringify({"score": votee.score}));
+									}
+								});
+								voter.votedon[req.params.votee] = {upvote: true};
+								voter.save(function saveVoter(saveVoterErr) {
+									if(saveVoterErr) {
+										//
+									} else {
+										console.log(voter.votedon);
+										console.log("Saved voert.votedon");
+									}
+								});
+							} else {
+								res.writeHead(404);
+								res.write("jwt verification error");
+								res.end();
+							}
+						});
+					} else {
+						res.writeHead(403);
+						if(!voter) {
+							res.write("Voter not found");
+						} else {
+							res.write("Voter already voted");
+						}
+						res.end();
+					}
+				});
+			} else {
+				res.writeHead(403);
+				res.write("Voter not found");
+				res.end();
 			}
 		});
 	});
@@ -286,9 +343,11 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 					_modlist.save(function(saveErr) {
 						if(saveErr) {
 							res.statusCode = 500;
+							res.write("Saving to server failed");
 							res.end();
 						} else {
 							res.statusCode = 200;
+							res.write("Access denied, incorrect password");
 							res.end();
 						}
 					});

@@ -20,5 +20,9 @@ gulp.task("buildNode", function() {
 });
 
 gulp.task("default", ["buildNode"]);
+gulp.task("watch", ["default"], function() {
+  "use strict";
+  gulp.watch("src/*.js", ["buildNode"]);
+});
 
 module.exports = function() { "use strict"; gulp.run("default"); };
