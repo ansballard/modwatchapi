@@ -23,7 +23,7 @@ var tokenEnsureAuthorized = function tokenEnsureAuthorized(req, res, next) { "us
 		req.token = bearerToken;
 		next();
 	} else {
-		res.send(403);
+		res.sendStatus(403);
 	}
 };
 
@@ -45,10 +45,10 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 		});
 	});
 	app.get("/api/users/list", function(req, res) {
-		Modlist.find({}, {username: 1, timestamp: 1}, function(err, _mods) {
+		Modlist.find({}, {username: 1, timestamp: 1, score: 1}, function(err, _mods) {
 			var mods = [];
 			for(var i = _mods.length - 1, j = 0; i >= 0; i--, j++) {
-				mods[j] = {"username": _mods[i].username, "timestamp": _mods[i].timestamp};
+				mods[j] = {"username": _mods[i].username, "score": _mods[i].score, "timestamp": _mods[i].timestamp};
 			}
 			res.set("Content-Type", "application/json");
 			res.send(mods);
@@ -268,17 +268,22 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 				res.writeHead(403);
 				res.write("jwt verification error");
 				res.end();
+			} else if(decoded.username === req.params.votee) {
+				res.writeHead(403);
+				res.write("You can't vote for yourself");
+				res.end();
 			} else if(decoded) {
 				Modlist.findOne({"username": decoded.username}, function(voterFindErr, voter) {
-					console.log(voter.votedon[req.params.votee]);
-					console.log(voter.votedon);
-					console.log(req.params.votee);
-					if(voter && (!voter.votedon || !voter.votedon[req.params.votee] || voter.votedon[req.params.votee].upvote !== true)) {
-						voter.votedon = voter.votedon || {};
+					var voterInfo = voter.votedOnUser(req.params.votee);
+					if(voter && !voterInfo.upvoted) {
 						Modlist.findOne({"username": req.params.votee}, function(findVoteeErr, votee) {
 							if(votee) {
-								votee.score += 1;
-								votee.save(function(voteeSaveErr) {
+								if(voterInfo.index === -1) {
+									votee.score += 1;
+								} else {
+									votee.score += 2;
+								}
+								votee.save(function saveVotee(voteeSaveErr) {
 									if(voteeSaveErr) {
 										res.writeHead(500);
 										res.write("Error saving votee info");
@@ -288,13 +293,82 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 										res.end(JSON.stringify({"score": votee.score}));
 									}
 								});
-								voter.votedon[req.params.votee] = {upvote: true};
+								if(voterInfo.index !== -1) {
+									voter.votedon[voterInfo.index].upvoted = true;
+								} else {
+									voter.votedon.push({"username": req.params.votee, "upvoted": true});
+								}
 								voter.save(function saveVoter(saveVoterErr) {
 									if(saveVoterErr) {
-										//
+										console.log(saveVoterErr);
 									} else {
-										console.log(voter.votedon);
-										console.log("Saved voert.votedon");
+										console.log("Saved voter.votedon");
+									}
+								});
+							} else {
+								res.writeHead(404);
+								res.write("jwt verification error");
+								res.end();
+							}
+						});
+					} else {
+						res.writeHead(403);
+						if(!voter) {
+							res.write("Voter not found");
+						} else {
+							res.write("Voter already voted");
+						}
+						res.end();
+					}
+				});
+			} else {
+				res.writeHead(403);
+				res.write("Voter not found");
+				res.end();
+			}
+		});
+	});
+	app.post("/auth/downvote/:votee", tokenEnsureAuthorized, function(req, res) {
+		jwt.verify(req.token, process.env.JWTSECRET, function(jwtVerifyErr, decoded) {
+			if(jwtVerifyErr) {
+				res.writeHead(403);
+				res.write("jwt verification error");
+				res.end();
+			} else if(decoded.username === req.params.votee) {
+				res.writeHead(403);
+				res.write("Why would you downvote yourself?");
+				res.end();
+			} else if(decoded) {
+				Modlist.findOne({"username": decoded.username}, function(voterFindErr, voter) {
+					var voterInfo = voter.votedOnUser(req.params.votee);
+					if(voter && (voterInfo.index === -1 || voterInfo.upvoted)) {
+						Modlist.findOne({"username": req.params.votee}, function(findVoteeErr, votee) {
+							if(votee) {
+								if(voterInfo.index === -1) {
+									votee.score -= 1;
+								} else {
+									votee.score -= 2;
+								}
+								votee.save(function saveVotee(voteeSaveErr) {
+									if(voteeSaveErr) {
+										res.writeHead(500);
+										res.write("Error saving votee info");
+										res.end();
+									} else {
+										res.setHeader("Content-Type", "application/json");
+										res.end(JSON.stringify({"score": votee.score}));
+									}
+								});
+								if(voterInfo.index !== -1) {
+									voter.votedon[voterInfo.index].upvoted = false;
+								} else {
+									voter.votedon.push({"username": req.params.votee, "upvoted": false});
+								}
+								voter.save(function saveVoter(saveVoterErr) {
+									if(saveVoterErr) {
+										console.log(saveVoterErr);
+									} else {
+										console.log("Saved voter.votedon");
 									}
 								});
 							} else {

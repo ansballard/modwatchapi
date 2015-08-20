@@ -24,7 +24,7 @@ var modlistSchema = new Schema({
 	token: String,
 	timestamp: Date,
 	score: {type: Number, default: 0},
-	votedon: Object
+	votedon: [{"username": String, "upvoted": Boolean}]
 }, {
 	collection: "modlist"
 });
@@ -111,5 +111,21 @@ modlistSchema.methods.updateFile = function updateFile(userFile, type) {
 /**
  *  Scoring Logic
  */
+
+modlistSchema.methods.votedOnUser = function upvotedUser(username) {
+	"use strict";
+	var info = {
+		index: -1,
+		upvoted: false
+	};
+	for(var i = 0; i < this.votedon.length; i++) {
+		if(this.votedon[i].username === username) {
+			info.index = i;
+			info.upvoted = this.votedon[i].upvoted;
+			break;
+		}
+	}
+	return info;
+};
 
 module.exports = mongoose.model("Modlist", modlistSchema);
