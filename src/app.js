@@ -15,7 +15,7 @@ var mongoose = require("mongoose/");
 var configDB;
 
 if(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_NODEJS_IP) {
-	configDB = require("./config/db.js").getLive(process.env.DBUSERNAME, process.env.DBPASSWORD);
+	configDB = require("./config/db.js").getNewLive(process.env.DBUSERNAME, process.env.DBPASSWORD);
 } else {
 	configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
 	//var configDB = require("./config/db.js").getLocal(null, null);
