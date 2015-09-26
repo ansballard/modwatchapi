@@ -11,7 +11,7 @@
   "rules": {
     "camelcase": 1,
     "dot-notation": 1,
-    "no-console": 1,
+    "no-console": 0,
     "space-infix-ops": 1,
     "quotes": 1,
     "key-spacing": 1,

@@ -45,7 +45,10 @@ app.use(session({secret: process.env.DBEXPRESSSECRET, resave: false, saveUniniti
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors(corsOptions));
 
-var scriptVersion = "0.26b";
+var scriptVersion = {
+  "0.2": "0.26b",
+  "0.3": "0.3.1"
+};
 
 require("./routes.min.js")(app, jwt, scriptVersion);
 
