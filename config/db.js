@@ -2,7 +2,7 @@ module.exports = {
 
 	getDev: function(username, password) {
 		"use strict";
-		return "mongodb://" + username + ":" + password + "@ds055210.mongolab.com:55210/skyrimdev2";
+		return "mongodb://" + username + ":" + password + "@ds051873.mongolab.com:51873/modwatchdev";
 	},
 	getLive: function(username, password) {
 		"use strict";
