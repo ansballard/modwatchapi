@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cors(corsOptions));
 
 var scriptVersion = {
-  "0.2": "0.26b",
+  "0.2": "0.27",
   "0.3": "0.3.1"
 };
 
