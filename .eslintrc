@@ -1,12 +1,11 @@
 {
+  "env": {
+    "node": true,
+    "es6": true
+  },
   "globals": {
-    "require": true,
-    "module": true,
-    "angular": true,
     "console": true,
-    "JsDiff": true,
-    "__dirname": true,
-    "process": true
+    "JsDiff": true
   },
   "rules": {
     "camelcase": 1,
@@ -21,6 +20,7 @@
     "eol-last": 1,
     "no-spaced-func": 1,
     "no-multi-spaces": 1,
-    "no-mixed-spaces-and-tabs": 1
+    "no-mixed-spaces-and-tabs": 1,
+    "handle-callback-err": 1
   }
 }

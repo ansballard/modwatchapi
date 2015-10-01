@@ -15,10 +15,10 @@ var mongoose = require("mongoose/");
 var configDB;
 
 if(process.env.OPENSHIFT_NODEJS_PORT || process.env.OPENSHIFT_NODEJS_IP) {
-	configDB = require("./config/db.js").getNewLive(process.env.DBUSERNAME, process.env.DBPASSWORD);
+	configDB = require("../config/db.js").getNewLive(process.env.DBUSERNAME, process.env.DBPASSWORD);
 } else {
-	configDB = require("./config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
-	//var configDB = require("./config/db.js").getLocal(null, null);
+	configDB = require("../config/db.js").getDev(process.env.DBUSERNAME, process.env.DBPASSWORD);
+	//var configDB = require("../config/db.js").getLocal(null, null);
 }
 
 mongoose.connect(configDB);
@@ -50,7 +50,7 @@ var scriptVersion = {
   "0.3": "0.3.1"
 };
 
-require("./routes.min.js")(app, jwt, scriptVersion);
+require("./routes.js")(app, jwt, scriptVersion);
 
 http.createServer(app).listen(app.get("port"), app.get("ip"), function() { "use strict";
   console.log("Express server listening at " + app.get("ip") + ":" + app.get("port"));

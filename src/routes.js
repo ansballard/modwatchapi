@@ -1,4 +1,4 @@
-var Modlist = require("./modlist.min.js");
+var Modlist = require("./modlist.js");
 
 var supportedFiletypes = [
 	"plugins",
