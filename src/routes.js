@@ -56,7 +56,11 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 	});
 	app.get("/api/script/version", function(req, res) {
 		res.set("Content-Type", "text/plain");
-		res.end(scriptVersion);
+		res.end(scriptVersion["0.2"]);
+	});
+	app.get("/api/script/version/3", function(req, res) {
+		res.set("Content-Type", "text/plain");
+		res.end(scriptVersion["0.3"]);
 	});
 	app.get("/api/user/:username/file/:filetype", function(req, res) {
 		if(validFiletype(req.params.filetype)) {
