@@ -398,6 +398,19 @@ module.exports = function(app, jwt, scriptVersion) { "use strict";
 			}
 		});
 	});
+	app.post("auth/remove/:username", function(req, res) {
+		console.log("hit the route?");
+		const profileToRemove = Modlist.findOne({username: req.params.username}, function(err, profile) {
+			if(profile && profile.validPassword(req.body.password)) {
+				profileToRemove.remove();
+				res.writeHead(200);
+				res.end();
+			} else {
+				res.writeHead(403);
+				res.end();
+			}
+		});
+	});
 	app.post("/loadorder", function(req, res) {
 		Modlist.findOne({"username": req.body.username}, function(err, _modlist) {
 			if(_modlist) { // if the username exists in the db
